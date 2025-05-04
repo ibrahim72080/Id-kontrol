@@ -1,1 +1,132 @@
 # Id-kontrol
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>ID Kontrol ve Kayıt</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    input, textarea, button { font-size: 1em; padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    #idList { margin-top: 15px; padding-left: 20px; }
+    li { margin-bottom: 3px; }
+    .section { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .section h3 { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <h2>ID Kontrol & Kayıt Sistemi</h2>
+  
+  <div class="section">
+    <h3>1. Tekli ID Ekle</h3>
+    <label for="newId">Yeni ID girin:</label><br>
+    <input type="text" id="newId" placeholder="Örn. ABC123"><br>
+    <button id="saveBtn">Kaydet & Kontrol Et</button>
+    <p id="messageSingle"></p>
+  </div>
+  
+  <div class="section">
+    <h3>2. Toplu ID Ekle</h3>
+    <label for="bulkIds">ID’leri satır veya virgülle ayrılarak yapıştırın:</label><br>
+    <textarea id="bulkIds" rows="4" placeholder="Örn. ID1,ID2,ID3 veya her satıra bir ID"></textarea><br>
+    <button id="bulkSaveBtn">Toplu Kaydet & Kontrol Et</button>
+    <p id="messageBulk"></p>
+  </div>
+  
+  <h3>Kayıtlı ID’ler:</h3>
+  <ul id="idList"></ul>
+
+  <script>
+    // LocalStorage'dan ID dizisini al, yoksa boş dizi
+    function loadIds() {
+      const saved = localStorage.getItem('ids');
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    // ID dizisini LocalStorage'a kaydet
+    function saveIds(ids) {
+      localStorage.setItem('ids', JSON.stringify(ids));
+    }
+
+    // Ekrandaki listeyi güncelle
+    function renderList() {
+      const listEl = document.getElementById('idList');
+      listEl.innerHTML = '';
+      loadIds().forEach(id => {
+        const li = document.createElement('li');
+        li.textContent = id;
+        listEl.appendChild(li);
+      });
+    }
+
+    // Tekli ID kaydet
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const input = document.getElementById('newId');
+      const id = input.value.trim();
+      const msg = document.getElementById('messageSingle');
+      msg.textContent = '';
+
+      if (!id) {
+        msg.textContent = 'Lütfen geçerli bir ID girin.';
+        return;
+      }
+
+      const ids = loadIds();
+      if (ids.includes(id)) {
+        msg.textContent = `⚠️ Bu ID zaten kayıtlı: ${id}`;
+      } else {
+        ids.push(id);
+        saveIds(ids);
+        msg.textContent = `✅ Yeni ID kaydedildi: ${id}`;
+        renderList();
+      }
+      input.value = '';
+    });
+
+    // Toplu ID kaydet
+    document.getElementById('bulkSaveBtn').addEventListener('click', () => {
+      const textarea = document.getElementById('bulkIds');
+      const raw = textarea.value.trim();
+      const msg = document.getElementById('messageBulk');
+      msg.textContent = '';
+
+      if (!raw) {
+        msg.textContent = 'Lütfen en az bir ID girin.';
+        return;
+      }
+
+      // Satır veya virgülle ayır
+      let parts = raw.split(/[\r\n,]+/).map(s => s.trim()).filter(s => s);
+      if (parts.length === 0) {
+        msg.textContent = 'Geçerli ID bulunamadı.';
+        return;
+      }
+
+      let ids = loadIds();
+      let added = [];
+      let duplicates = [];
+
+      parts.forEach(id => {
+        if (ids.includes(id)) {
+          duplicates.push(id);
+        } else {
+          ids.push(id);
+          added.push(id);
+        }
+      });
+
+      saveIds(ids);
+      renderList();
+
+      // Mesaj oluştur
+      let lines = [];
+      if (added.length) lines.push(`✅ Eklendi (${added.length}): ${added.join(', ')}`);
+      if (duplicates.length) lines.push(`⚠️ Zaten kayıtlı (${duplicates.length}): ${duplicates.join(', ')}`);
+      msg.innerHTML = lines.join('<br>');
+      textarea.value = '';
+    });
+
+    // İlk yüklemede listeyi göster
+    renderList();
+  </script>
+</body>
+</html>
