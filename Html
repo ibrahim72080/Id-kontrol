@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sürpriz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #ffe6f0, #fff0f5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #question, #surprise {
+      text-align: center;
+      z-index: 1;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    #evet {
+      background-color: #ff69b4;
+      color: white;
+    }
+
+    #hayir {
+      background-color: #f44336;
+      color: white;
+    }
+
+    #surprise {
+      display: none;
+    }
+
+    .minommm {
+      font-size: 32px;
+      color: #e91e63;
+      margin-bottom: 20px;
+    }
+
+    .minommm .heart {
+      margin: 0 8px;
+    }
+
+    #surprise h1 {
+      font-size: 28px;
+      color: #d5006d;
+    }
+
+    .hearts {
+      font-size: 30px;
+      margin: 20px;
+    }
+
+    .hug {
+      font-size: 50px;
+      margin: 20px;
+    }
+
+    .animals {
+      position: relative;
+      height: 100px;
+    }
+
+    .frog {
+      position: absolute;
+      bottom: 0;
+      animation: jump 2s infinite;
+    }
+
+    .panda {
+      display: inline-block;
+      margin: 0 20px;
+    }
+
+    @keyframes jump {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="question">
+    <h1>Sürprizi görmek ister misin fıstığımm?</h1>
+    <button id="evet">Evet</button>
+    <button id="hayir">Hayır</button>
+  </div>
+
+  <div id="surprise">
+    <div class="minommm">
+      <span class="heart">💖</span>
+      bitanecik minommm
+      <span class="heart">💖</span>
+    </div>
+    <h1>seni herşeyden çokkkkk seviyorummmm gülüşüne aşık olduğummmm</h1>
+    <div class="hearts">❤️ ❤️ ❤️</div>
+    <div class="hug">🐸🤗🐼</div>
+    <div class="animals">
+      <span class="frog" style="left: 10%;">🐸</span>
+      <span class="panda">🐼🎋</span>
+      <span class="frog" style="left: 30%;">🐸</span>
+      <span class="panda">🐼🎋</span>
+      <span class="frog" style="left: 50%;">🐸</span>
+      <span class="panda">🐼🎋</span>
+    </div>
+  </div>
+
+  <audio id="music" src="path/to/song.mp3"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const evetButton = document.getElementById('evet');
+      const hayirButton = document.getElementById('hayir');
+      const questionDiv = document.getElementById('question');
+      const surpriseDiv = document.getElementById('surprise');
+      const music = document.getElementById('music');
+      let hayirCount = 0;
+
+      evetButton.addEventListener('click', function() {
+        questionDiv.style.display = 'none';
+        surpriseDiv.style.display = 'block';
+        music.play();
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      });
+
+      hayirButton.addEventListener('click', function() {
+        hayirCount++;
+        if (hayirCount === 1) {
+          hayirButton.textContent = 'Emin misin? Bence görmelisin';
+        } else if (hayirCount === 2) {
+          hayirButton.textContent = 'Sürprizim sana kurban olduğumm';
+        } else {
+          let currentSize = parseInt(window.getComputedStyle(evetButton).fontSize);
+          evetButton.style.fontSize = (currentSize + 10) + 'px';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
